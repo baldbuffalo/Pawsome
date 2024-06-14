@@ -19,9 +19,9 @@ import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
-import com.google.firebase.ml.vision.FirebaseVision
-import com.google.firebase.ml.vision.common.FirebaseVisionImage
-import com.google.firebase.ml.vision.label.FirebaseVisionImageLabeler
+import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.label.ImageLabeling
+import com.google.mlkit.vision.label.defaults.ImageLabelerOptions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -93,7 +93,7 @@ class MainActivity : AppCompatActivity() {
             val preview = Preview.Builder().build()
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
-            preview.setSurfaceProvider(cameraPreview.surfaceProvider)
+            preview.surfaceProvider = cameraPreview.surfaceProvider
 
             try {
                 cameraProvider.unbindAll()
@@ -154,32 +154,37 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun handleImageUpload(imageUri: Uri) {
-        val image = FirebaseVisionImage.fromFilePath(this, imageUri)
-        val labeler = FirebaseVision.getInstance().onDeviceImageLabeler
+        try {
+            val image = InputImage.fromFilePath(this, imageUri)
+            val labeler = ImageLabeling.getClient(ImageLabelerOptions.DEFAULT_OPTIONS)
 
-        labeler.processImage(image)
-            .addOnSuccessListener { labels ->
-                var hasCat = false
-                for (label in labels) {
-                    val text = label.text
-                    if (text.equals("Cat", ignoreCase = true)) {
-                        hasCat = true
-                        break
+            labeler.process(image)
+                .addOnSuccessListener { labels ->
+                    var hasCat = false
+                    for (label in labels) {
+                        val text = label.text
+                        if (text.equals("Cat", ignoreCase = true)) {
+                            hasCat = true
+                            break
+                        }
+                    }
+                    if (hasCat) {
+                        // Image contains a cat, open CatFormActivity
+                        val intent = Intent(this, CatFormActivity::class.java)
+                        startActivity(intent)
+                    } else {
+                        // Image does not contain a cat, show an error message
+                        Toast.makeText(this, "Only cat images are allowed.", Toast.LENGTH_SHORT).show()
                     }
                 }
-                if (hasCat) {
-                    // Image contains a cat, open CatFormActivity
-                    val intent = Intent(this, CatFormActivity::class.java)
-                    startActivity(intent)
-                } else {
-                    // Image does not contain a cat, show an error message
-                    Toast.makeText(this, "Only cat images are allowed.", Toast.LENGTH_SHORT).show()
+                .addOnFailureListener { e ->
+                    // Error handling
+                    Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
-            }
-            .addOnFailureListener { e ->
-                // Error handling
-                Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onRequestPermissionsResult(

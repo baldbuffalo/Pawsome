@@ -58,9 +58,12 @@ android {
 }
 
 dependencies {
-    //implementation (libs.firebase.ml.vision.image.label.model)
-    //implementation (libs.play.services.mlkit.image.labeling)
-    //implementation(libs.image.labeling)
+
+
+    implementation (libs.image.labeling.default.common)
+    implementation(libs.firebase.ml.vision.image.label.model)
+    implementation(libs.play.services.mlkit.image.labeling)
+    implementation(libs.image.labeling)
     implementation(platform(libs.firebase.bom))
     implementation(libs.androidx.camera.core)
     implementation(libs.androidx.camera.camera2)
