@@ -30,21 +30,28 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="List" />
+            android:text="@string/list" />
+
+        <Button
+            android:id="@+id/BadgesButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/badges" />
 
         <Button
             android:id="@+id/ScanButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Scan" />
+            android:text="@string/scan" />
 
         <Button
             android:id="@+id/ProfileButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Profile" />
+            android:text="@string/profile" />
 
     </LinearLayout>
 
