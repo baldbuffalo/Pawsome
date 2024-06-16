@@ -26,6 +26,7 @@ android {
     buildFeatures {
         dataBinding = true
         viewBinding = true
+        compose = true
     }
 
     buildTypes {
@@ -44,9 +45,6 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
-    buildFeatures {
-        compose = true
-    }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
     }
@@ -58,9 +56,9 @@ android {
 }
 
 dependencies {
-
-
-    implementation (libs.image.labeling.default.common)
+    implementation(libs.image.labeling.default.common) {
+        exclude(group = "com.google.android.gms", module = "play-services-vision-common")
+    }
     implementation(libs.firebase.ml.vision.image.label.model)
     implementation(libs.play.services.mlkit.image.labeling)
     implementation(libs.image.labeling)
@@ -89,7 +87,6 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.play.services.base)
     implementation(libs.play.services.auth) // Google Sign-In
-    implementation(libs.androidx.constraintlayout)
     implementation(libs.firebase.ml.vision)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
