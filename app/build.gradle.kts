@@ -58,7 +58,12 @@ android {
 dependencies {
     implementation(libs.image.labeling.default.common) {
         exclude(group = "com.google.android.gms", module = "play-services-vision-common")
+        exclude(group = "com.google.android.gms", module = "com.google.android.gms.internal.vision.zzi")
+        exclude(group = "com.google.android.gms", module = "com.google.android.gms.internal.vision.zzu")
+        exclude(group = "com.google.android.gms", module = "com.google.android.gms.internal.vision.zzv")
+        exclude(group = "com.google.android.gms", module = "com.google.android.gms.internal.vision.zzw")
     }
+
     implementation(libs.firebase.ml.vision.image.label.model)
     implementation(libs.play.services.mlkit.image.labeling)
     implementation(libs.image.labeling)
