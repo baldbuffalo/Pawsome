@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.compose.compiler)
     id("org.jetbrains.kotlin.kapt") version "2.0.0"
-    alias(libs.plugins.google.gms.google.services)
+    //alias(libs.plugins.google.gms.google.services)
 }
 
 android {
@@ -56,13 +56,6 @@ android {
 }
 
 dependencies {
-    implementation(libs.image.labeling.default.common) {
-        exclude(group = "com.google.android.gms", module = "play-services-vision-common")
-        exclude(group = "com.google.android.gms", module = "com.google.android.gms.internal.vision.zzi")
-        exclude(group = "com.google.android.gms", module = "com.google.android.gms.internal.vision.zzu")
-        exclude(group = "com.google.android.gms", module = "com.google.android.gms.internal.vision.zzv")
-        exclude(group = "com.google.android.gms", module = "com.google.android.gms.internal.vision.zzw")
-    }
 
     implementation(libs.firebase.ml.vision.image.label.model)
     implementation(libs.play.services.mlkit.image.labeling)

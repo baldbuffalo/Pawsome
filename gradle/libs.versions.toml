@@ -37,6 +37,7 @@ androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = 
 androidx-lifecycle-livedata-ktx = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "lifecycle" }
 androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
 androidx-lifecycle-viewmodel-savedstate = { module = "androidx.lifecycle:lifecycle-viewmodel-savedstate", version.ref = "lifecycle" }
+lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx",  version.ref = "lifecycle" }
 credentials = { module = "androidx.credentials:credentials-play-services-auth", name = "credentials", version.ref = "credentials" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 firebase-ml-vision-image-label-model = { module = "com.google.firebase:firebase-ml-vision-image-label-model", version.ref = "firebaseMlVisionImageLabelModel" }
@@ -44,7 +45,6 @@ googleid = { module = "com.google.android.libraries.identity.googleid:googleid",
 image-labeling = { module = "com.google.mlkit:image-labeling", version.ref = "imageLabeling" }
 image-labeling-default-common = { module = "com.google.mlkit:image-labeling-default-common", version.ref = "imageLabelingDefaultCommon" }
 kotlinx-coroutines-play-services = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "kotlinxCoroutinesPlayServices" }
-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
