@@ -10,4 +10,5 @@
     <string name="name">name</string>
     <string name="enter_your_name">enter_your_name</string>
     <string name="enter_your_email">enter_your_email</string>
+    <string name="submit">submit</string>
 </resources>
