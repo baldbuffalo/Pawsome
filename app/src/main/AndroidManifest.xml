@@ -33,6 +33,23 @@
             android:exported="true"
             android:theme="@style/AppTheme">
         </activity>
+
+        <!-- Adding new activities -->
+        <activity
+            android:name=".ProfileActivity"
+            android:exported="true"
+            android:theme="@style/AppTheme">
+        </activity>
+        <activity
+            android:name=".BadgesActivity"
+            android:exported="true"
+            android:theme="@style/AppTheme">
+        </activity>
+        <activity
+            android:name=".CatFormActivity"
+            android:exported="true"
+            android:theme="@style/AppTheme">
+        </activity>
     </application>
 
 </manifest>

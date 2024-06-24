@@ -13,7 +13,7 @@ android {
     defaultConfig {
         applicationId = "com.example.pawsome"
         minSdk = 26
-        targetSdkPreview = "VanillaIceCream"
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -39,14 +39,14 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
     kotlinOptions {
         jvmTarget = "1.8"
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.6.7"
+        kotlinCompilerExtensionVersion = "2.0.0"
     }
     packaging {
         resources {

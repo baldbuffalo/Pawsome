@@ -171,6 +171,7 @@ class MainActivity : AppCompatActivity() {
                     if (hasCat) {
                         // Image contains a cat, open CatFormActivity
                         val intent = Intent(this, CatFormActivity::class.java)
+                        intent.putExtra("imageUri", imageUri)
                         startActivity(intent)
                     } else {
                         // Image does not contain a cat, show an error message
@@ -186,6 +187,7 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
+
 
     override fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<out String>, grantResults: IntArray
