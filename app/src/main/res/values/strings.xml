@@ -7,4 +7,7 @@
     <string name="Scan">Scan</string>
     <string name="list">List</string>
     <string name="scan">Scan</string>
+    <string name="name">name</string>
+    <string name="enter_your_name">enter_your_name</string>
+    <string name="enter_your_email">enter_your_email</string>
 </resources>
