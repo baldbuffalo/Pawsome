@@ -71,7 +71,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.savedstate)
-    implementation(libs.lifecycle.runtime.ktx)
+    implementation (libs.androidx.lifecycle.runtime)
     implementation(libs.identity.credential)
     implementation(libs.googleid)
     implementation(libs.credentials)
@@ -85,7 +85,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.play.services.base)
     implementation(libs.play.services.auth) // Google Sign-In
-    implementation(libs.firebase.ml.vision)
+    //implementation(libs.firebase.ml.vision)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
