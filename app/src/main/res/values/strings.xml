@@ -11,4 +11,7 @@
     <string name="enter_your_name">enter_your_name</string>
     <string name="enter_your_email">enter_your_email</string>
     <string name="submit">submit</string>
+    <string name="badges">badges</string>
+    <string name="back_button_description">back_button_description</string>
+    <string name="user_name">user_name</string>
 </resources>
