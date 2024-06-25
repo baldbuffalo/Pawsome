@@ -34,6 +34,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var scanningLine: View
     private lateinit var uploadButton: Button
     private val cameraRequestCode = 101
+    private var cameraProvider: ProcessCameraProvider? = null
 
     private val galleryLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == RESULT_OK) {
@@ -89,15 +90,15 @@ class MainActivity : AppCompatActivity() {
 
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
         cameraProviderFuture.addListener({
-            val cameraProvider = cameraProviderFuture.get()
+            cameraProvider = cameraProviderFuture.get()
             val preview = Preview.Builder().build()
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
             preview.surfaceProvider = cameraPreview.surfaceProvider
 
             try {
-                cameraProvider.unbindAll()
-                cameraProvider.bindToLifecycle(
+                cameraProvider?.unbindAll()
+                cameraProvider?.bindToLifecycle(
                     this as LifecycleOwner, cameraSelector, preview
                 )
 
@@ -111,6 +112,7 @@ class MainActivity : AppCompatActivity() {
                 uploadButton.visibility = View.VISIBLE
                 uploadButton.setOnClickListener {
                     openGalleryForCatUpload()
+                    cameraProvider?.unbindAll() // Stop the camera
                 }
 
                 // Hide the progress bar after a delay
@@ -187,7 +189,6 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
-
 
     override fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<out String>, grantResults: IntArray
