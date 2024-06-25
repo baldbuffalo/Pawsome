@@ -13,6 +13,6 @@
     <string name="submit">submit</string>
     <string name="badges">badges</string>
     <string name="back_button_description">back_button_description</string>
-    <string name="user_name">user_name</string>
     <string name="upload">upload</string>
+    <string name="user_name">Username: %1$s</string>
 </resources>
