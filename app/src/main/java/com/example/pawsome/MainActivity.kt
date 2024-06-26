@@ -1,30 +1,36 @@
 package com.example.pawsome
 
-import android.content.Intent
-import android.net.Uri
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.google.mlkit.vision.common.InputImage
-import com.google.mlkit.vision.label.ImageLabeling
-import com.google.mlkit.vision.label.defaults.ImageLabelerOptions
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageCapture
+import androidx.camera.core.Preview
+import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.view.PreviewView
+import androidx.core.content.ContextCompat
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var feedAdapter: FeedAdapter
-    private lateinit var uploadButton: Button
+    private lateinit var cameraExecutor: ExecutorService
+    private lateinit var previewView: PreviewView
+    private lateinit var scanButton: Button
 
-    private val galleryLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == RESULT_OK) {
-            val imageUri = result.data?.data
-            imageUri?.let {
-                handleImageUpload(it)
-            }
+    private var imageCapture: ImageCapture? = null
+    private var isCameraStarted = false
+
+    private val cameraPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+        if (isGranted) {
+            startCamera()
+        } else {
+            Toast.makeText(this, "Camera permission is required to use this feature.", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -32,52 +38,67 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        //recyclerView = findViewById(R.id.recyclerView)
-        recyclerView.layoutManager = LinearLayoutManager(this)
+        previewView = findViewById(R.id.textureView)
+        scanButton = findViewById(R.id.ScanButton) // Assuming you have a Button with id 'ScanButton'
+        scanButton.setOnClickListener {
+            checkCameraPermission()
+        }
 
-        val feedItems = mutableListOf<FeedItem>()
-        feedAdapter = FeedAdapter(feedItems)
-        recyclerView.adapter = feedAdapter
+        cameraExecutor = Executors.newSingleThreadExecutor()
+    }
 
-        uploadButton = findViewById(R.id.uploadButton)
-        uploadButton.setOnClickListener {
-            openGalleryForCatUpload()
+    override fun onDestroy() {
+        super.onDestroy()
+        cameraExecutor.shutdown()
+    }
+
+    private fun checkCameraPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            startCamera()
+        } else {
+            cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
         }
     }
 
-    private fun openGalleryForCatUpload() {
-        val intent = Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        galleryLauncher.launch(intent)
+    private fun startCamera() {
+        if (isCameraStarted) return // Prevent starting camera multiple times
+
+        val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
+
+        cameraProviderFuture.addListener({
+            val cameraProvider = cameraProviderFuture.get()
+
+            // Preview
+            val preview = Preview.Builder()
+                .build()
+                .also {
+                    it.setSurfaceProvider(previewView.surfaceProvider)
+                }
+
+            // ImageCapture
+            imageCapture = ImageCapture.Builder()
+                .build()
+
+            // Select back camera as a default
+            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+
+            try {
+                // Unbind use cases before rebinding
+                cameraProvider.unbindAll()
+
+                // Bind use cases to camera
+                cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture)
+
+                isCameraStarted = true // Mark camera as started
+
+            } catch (exc: Exception) {
+                Log.e(TAG, "Use case binding failed", exc)
+            }
+
+        }, ContextCompat.getMainExecutor(this))
     }
 
-    private fun handleImageUpload(imageUri: Uri) {
-        try {
-            val image = InputImage.fromFilePath(this, imageUri)
-            val labeler = ImageLabeling.getClient(ImageLabelerOptions.DEFAULT_OPTIONS)
-
-            labeler.process(image)
-                .addOnSuccessListener { labels ->
-                    var hasCat = false
-                    for (label in labels) {
-                        val text = label.text
-                        if (text.equals("Cat", ignoreCase = true)) {
-                            hasCat = true
-                            break
-                        }
-                    }
-                    if (hasCat) {
-                        val newItem = FeedItem(imageUri, "Uploaded Cat", "Uploaded Cat Description")
-                        feedAdapter.addItem(newItem)
-                    } else {
-                        Toast.makeText(this, "Only cat images are allowed.", Toast.LENGTH_SHORT).show()
-                    }
-                }
-                .addOnFailureListener { e ->
-                    Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
-                }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
-        }
+    companion object {
+        private const val TAG = "MainActivity"
     }
 }
