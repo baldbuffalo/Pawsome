@@ -15,4 +15,7 @@
     <string name="back_button_description">back_button_description</string>
     <string name="upload">upload</string>
     <string name="user_name">Username: %1$s</string>
+    <string name="cat_image">cat_image</string>
+    <string name="cat_description">Cat Description</string>
+    <string name="cat_name">Cat Name</string>
 </resources>
