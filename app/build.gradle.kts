@@ -95,7 +95,6 @@ dependencies {
     implementation(libs.play.services.auth)
     implementation(libs.androidx.recyclerview)
     implementation(libs.firebase.firestore.ktx) // Google Sign-In
-    implementation(libs.firebase.ml.vision)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

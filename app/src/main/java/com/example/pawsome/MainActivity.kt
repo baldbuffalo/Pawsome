@@ -1,40 +1,29 @@
 package com.example.pawsome
 
-import android.Manifest
-import android.animation.ObjectAnimator
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
-import android.widget.ProgressBar
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.camera.core.CameraSelector
-import androidx.camera.core.Preview
-import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.camera.view.PreviewView
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.LifecycleOwner
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.label.ImageLabeling
 import com.google.mlkit.vision.label.defaults.ImageLabelerOptions
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var cameraPreview: PreviewView
-    private lateinit var progressBar: ProgressBar
-    private lateinit var scanningLine: View
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var feedAdapter: FeedAdapter
     private lateinit var uploadButton: Button
-    private val cameraRequestCode = 101
-    private var cameraProvider: ProcessCameraProvider? = null
 
     private val galleryLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == RESULT_OK) {
@@ -49,105 +38,19 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        findViewById<View>(R.id.ScanButton).setOnClickListener {
-            checkCameraPermission()
-        }
+        recyclerView = findViewById(R.id.recyclerView)
+        recyclerView.layoutManager = LinearLayoutManager(this)
 
-        findViewById<View>(R.id.BadgesButton).setOnClickListener {
-            openBadgesActivity()
-        }
+        // Example data
+        val feedItems = mutableListOf<FeedItem>()
 
-        findViewById<View>(R.id.ProfileButton).setOnClickListener {
-            val intent = Intent(this, ProfileActivity::class.java)
-            startActivity(intent)
-        }
-    }
+        feedAdapter = FeedAdapter(feedItems)
+        recyclerView.adapter = feedAdapter
 
-    private fun checkCameraPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-            != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.CAMERA),
-                cameraRequestCode
-            )
-        } else {
-            openCamera()
-        }
-    }
-
-    private fun openCamera() {
-        setContentView(R.layout.activity_camera) // Switch to the camera layout
-
-        cameraPreview = findViewById(R.id.camera_preview)
-        progressBar = findViewById(R.id.progressBar)
-        scanningLine = findViewById(R.id.scanningLine)
         uploadButton = findViewById(R.id.uploadButton)
-
-        // Show the progress bar when the camera is loading
-        progressBar.visibility = View.VISIBLE
-
-        val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
-        cameraProviderFuture.addListener({
-            cameraProvider = cameraProviderFuture.get()
-            val preview = Preview.Builder().build()
-            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-
-            preview.surfaceProvider = cameraPreview.surfaceProvider
-
-            try {
-                cameraProvider?.unbindAll()
-                cameraProvider?.bindToLifecycle(
-                    this as LifecycleOwner, cameraSelector, preview
-                )
-
-                // Show the scanning line
-                scanningLine.visibility = View.VISIBLE
-
-                // Animate the scanning line
-                animateScanningLine()
-
-                // Show the upload button after the camera is loaded
-                uploadButton.visibility = View.VISIBLE
-                uploadButton.setOnClickListener {
-                    openGalleryForCatUpload()
-                    cameraProvider?.unbindAll() // Stop the camera
-                }
-
-                // Hide the progress bar after a delay
-                CoroutineScope(Dispatchers.Main).launch {
-                    delay(2000) // Adjust this delay as needed (e.g., 2000 ms = 2 seconds)
-                    hideProgressBar()
-                }
-
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }, ContextCompat.getMainExecutor(this))
-    }
-
-    private fun animateScanningLine() {
-        cameraPreview.post {
-            val animator = ObjectAnimator.ofFloat(
-                scanningLine, "translationY",
-                0f, cameraPreview.height.toFloat()
-            )
-            animator.duration = 2000 // 2 seconds
-            animator.repeatMode = ObjectAnimator.REVERSE
-            animator.repeatCount = ObjectAnimator.INFINITE
-            animator.start()
+        uploadButton.setOnClickListener {
+            openGalleryForCatUpload()
         }
-    }
-
-    private fun hideProgressBar() {
-        // Hide the progress bar
-        progressBar.visibility = View.GONE
-    }
-
-    private fun openBadgesActivity() {
-        val intent = Intent(this, BadgesActivity::class.java)
-        startActivity(intent)
     }
 
     private fun openGalleryForCatUpload() {
@@ -171,10 +74,9 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
                     if (hasCat) {
-                        // Image contains a cat, open CatFormActivity
-                        val intent = Intent(this, CatFormActivity::class.java)
-                        intent.putExtra("imageUri", imageUri)
-                        startActivity(intent)
+                        // Image contains a cat, add it to the feed
+                        val newItem = FeedItem(imageUri, "Uploaded Cat", "Uploaded Cat Description")
+                        feedAdapter.addItem(newItem)
                     } else {
                         // Image does not contain a cat, show an error message
                         Toast.makeText(this, "Only cat images are allowed.", Toast.LENGTH_SHORT).show()
@@ -189,17 +91,37 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
+}
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<out String>, grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == cameraRequestCode) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                openCamera()
-            } else {
-                Toast.makeText(this, "Camera permission denied.", Toast.LENGTH_SHORT).show()
-            }
-        }
+data class FeedItem(val imageUri: Uri, val catName: String, val catDescription: String)
+
+class FeedAdapter(private val feedItems: MutableList<FeedItem>) :
+    RecyclerView.Adapter<FeedAdapter.FeedViewHolder>() {
+
+    class FeedViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val catImageView: ImageView = itemView.findViewById(R.id.catImageView)
+        val catNameTextView: TextView = itemView.findViewById(R.id.catNameTextView)
+        val catDescriptionTextView: TextView = itemView.findViewById(R.id.catDescriptionTextView)
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FeedViewHolder {
+        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.activity_feed, parent, false)
+        return FeedViewHolder(itemView)
+    }
+
+    override fun onBindViewHolder(holder: FeedViewHolder, position: Int) {
+        val feedItem = feedItems[position]
+        Glide.with(holder.catImageView.context)
+            .load(feedItem.imageUri)
+            .into(holder.catImageView)
+        holder.catNameTextView.text = feedItem.catName
+        holder.catDescriptionTextView.text = feedItem.catDescription
+    }
+
+    override fun getItemCount() = feedItems.size
+
+    fun addItem(item: FeedItem) {
+        feedItems.add(0, item) // Add new item at the beginning of the list
+        notifyItemInserted(0) // Notify adapter about the new item
     }
 }

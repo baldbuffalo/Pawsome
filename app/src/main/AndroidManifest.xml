@@ -34,6 +34,13 @@
             android:theme="@style/AppTheme">
         </activity>
 
+        <activity
+            android:name=".FeedActivity"
+            android:exported="true"
+            android:theme="@style/AppTheme">
+        </activity>
+
+
         <!-- Adding new activities -->
         <activity
             android:name=".ProfileActivity"
