@@ -1,4 +1,4 @@
-<!-- activity_feed_item.xml -->
+<!-- activity_feed.xml -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -9,7 +9,8 @@
         android:id="@+id/catImageView"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:scaleType="centerCrop" />
+        android:scaleType="centerCrop"> </ImageView>
+        <!---android:src="@drawable/placeholder_image" -->
 
     <TextView
         android:id="@+id/catNameTextView"
