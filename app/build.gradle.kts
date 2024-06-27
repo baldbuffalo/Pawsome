@@ -2,8 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.compose.compiler)
-    id("org.jetbrains.kotlin.kapt") version "2.0.0"
-    //alias(libs.plugins.google.gms.google.services)
+    id("org.jetbrains.kotlin.kapt") version "2.0.20-Beta1"
+    alias(libs.plugins.google.gms.google.services)
     id("com.google.devtools.ksp")
 }
 
@@ -47,7 +47,7 @@ android {
         jvmTarget = "1.8"
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "2.0.0"
+        kotlinCompilerExtensionVersion = "2.0.20-Beta1"
     }
     packaging {
         resources {
@@ -56,9 +56,14 @@ android {
     }
 }
 
+ksp {
+    arg("glide.generatedRoot", "com.example.pawsome.generated")
+}
+
 dependencies {
 
-    implementation (libs.glide)
+    implementation(libs.glide.v4160)
+    ksp(libs.ksp)
     ksp(libs.glide.compiler)
     implementation(libs.firebase.ml.vision.image.label.model)
     implementation(libs.play.services.mlkit.image.labeling)

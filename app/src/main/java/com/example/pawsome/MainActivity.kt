@@ -2,103 +2,55 @@ package com.example.pawsome
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
 import android.os.Bundle
-import android.util.Log
-import android.widget.Button
-import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.camera.core.CameraSelector
-import androidx.camera.core.ImageCapture
-import androidx.camera.core.Preview
-import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.camera.view.PreviewView
-import androidx.core.content.ContextCompat
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
 
 class MainActivity : AppCompatActivity() {
-
-    private lateinit var cameraExecutor: ExecutorService
-    private lateinit var previewView: PreviewView
-    private lateinit var scanButton: Button
-
-    private var imageCapture: ImageCapture? = null
-    private var isCameraStarted = false
-
-    private val cameraPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-        if (isGranted) {
-            startCamera()
-        } else {
-            Toast.makeText(this, "Camera permission is required to use this feature.", Toast.LENGTH_SHORT).show()
-        }
-    }
+    private var locationManager: LocationManager? = null
+    private var locationListener: LocationListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        previewView = findViewById(R.id.textureView)
-        scanButton = findViewById(R.id.ScanButton) // Assuming you have a Button with id 'ScanButton'
-        scanButton.setOnClickListener {
-            checkCameraPermission()
+        // Initialize LocationManager and LocationListener
+        locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
+        locationListener = object : LocationListener {
+            override fun onLocationChanged(location: Location) {
+                // Handle location updates here
+                val latitude = location.latitude
+                val longitude = location.longitude
+                // Do something with latitude and longitude
+            }
+
+            override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {}
+
+            override fun onProviderEnabled(provider: String) {}
+
+            override fun onProviderDisabled(provider: String) {}
         }
 
-        cameraExecutor = Executors.newSingleThreadExecutor()
+        // Request location updates
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            locationManager!!.requestLocationUpdates(
+                LocationManager.GPS_PROVIDER,
+                0,
+                0f,
+                locationListener as LocationListener
+            )
+        } else {
+            // Handle permission not granted
+        }
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        cameraExecutor.shutdown()
-    }
-
-    private fun checkCameraPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-            startCamera()
-        } else {
-            cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+        // Stop receiving location updates
+        if (locationManager != null && locationListener != null) {
+            locationManager!!.removeUpdates(locationListener!!)
         }
-    }
-
-    private fun startCamera() {
-        if (isCameraStarted) return // Prevent starting camera multiple times
-
-        val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
-
-        cameraProviderFuture.addListener({
-            val cameraProvider = cameraProviderFuture.get()
-
-            // Preview
-            val preview = Preview.Builder()
-                .build()
-                .also {
-                    it.setSurfaceProvider(previewView.surfaceProvider)
-                }
-
-            // ImageCapture
-            imageCapture = ImageCapture.Builder()
-                .build()
-
-            // Select back camera as a default
-            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-
-            try {
-                // Unbind use cases before rebinding
-                cameraProvider.unbindAll()
-
-                // Bind use cases to camera
-                cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture)
-
-                isCameraStarted = true // Mark camera as started
-
-            } catch (exc: Exception) {
-                Log.e(TAG, "Use case binding failed", exc)
-            }
-
-        }, ContextCompat.getMainExecutor(this))
-    }
-
-    companion object {
-        private const val TAG = "MainActivity"
     }
 }
