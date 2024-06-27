@@ -2,10 +2,9 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.compose.compiler)
-    alias(libs.plugins.google.gms.google.services)
+    id("org.jetbrains.kotlin.kapt") version "2.0.0"
+    //alias(libs.plugins.google.gms.google.services)
     id("com.google.devtools.ksp")
-    kotlin("kapt")
-    id("kotlin-kapt")
 }
 
 android {
@@ -58,13 +57,9 @@ android {
 }
 
 dependencies {
-    implementation ("com.github.bumptech.glide:glide:4.12.0")
-    ksp (libs.compiler)
-    implementation (libs.firebase.firestore.ktx)
-    implementation (libs.guava)
-    ksp(libs.androidx.room.compiler)
-    (libs.ksp)
-    implementation(libs.kotlin.stdlib)
+
+    implementation (libs.glide)
+    ksp(libs.glide.compiler)
     implementation(libs.firebase.ml.vision.image.label.model)
     implementation(libs.play.services.mlkit.image.labeling)
     implementation(libs.image.labeling)
@@ -92,9 +87,8 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.play.services.base)
-    implementation(libs.play.services.auth)
-    implementation(libs.androidx.recyclerview)
-    implementation(libs.firebase.firestore.ktx) // Google Sign-In
+    implementation(libs.play.services.auth) // Google Sign-In
+    //implementation(libs.firebase.ml.vision)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -102,8 +96,4 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-}
-
-kapt {
-    correctErrorTypes = true
 }

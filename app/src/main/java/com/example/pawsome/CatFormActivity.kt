@@ -8,6 +8,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.Glide
+
 
 class CatFormActivity : AppCompatActivity() {
 
@@ -28,7 +30,9 @@ class CatFormActivity : AppCompatActivity() {
         // Load image if available
         val imageUri = intent.getParcelableExtra<Uri>("imageUri")
         imageUri?.let {
-            catImageView.setImageURI(it)
+            Glide.with(this)
+                .load(it)
+                .into(catImageView)
         }
 
         val buttonSubmit = findViewById<View>(R.id.buttonSubmit)
