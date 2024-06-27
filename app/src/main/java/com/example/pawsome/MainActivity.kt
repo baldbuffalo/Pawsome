@@ -15,7 +15,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_camera)
+        setContentView(R.layout.activity_main) // Sets the activity_main.xml as the content view
 
         cameraPreviewContainer = findViewById(R.id.camera_preview)
 
