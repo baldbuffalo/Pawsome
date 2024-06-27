@@ -15,18 +15,18 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main) // Sets the activity_main.xml as the content view
+        setContentView(R.layout.activity_camera) // Sets the activity_camera.xml as the content view
 
         cameraPreviewContainer = findViewById(R.id.camera_preview)
 
         if (checkCameraPermission()) {
-            initializeCamera()
+            initializeCameraPreview()
         } else {
             requestCameraPermission()
         }
     }
 
-    private fun initializeCamera() {
+    private fun initializeCameraPreview() {
         camera = Camera.open()
         camera?.let {
             val preview = CameraPreview(this)
@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity() {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == CAMERA_PERMISSION_REQUEST_CODE && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            initializeCamera()
+            initializeCameraPreview()
         }
     }
 
