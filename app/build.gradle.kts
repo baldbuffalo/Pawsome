@@ -63,6 +63,7 @@ ksp {
 dependencies {
 
     implementation(libs.glide.v4160)
+    implementation(libs.androidx.recyclerview)
     ksp(libs.ksp)
     ksp(libs.glide.compiler)
     implementation(libs.firebase.ml.vision.image.label.model)
