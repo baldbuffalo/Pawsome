@@ -82,7 +82,6 @@ class UpdateChecker(private val context: Context) {
 
     private fun showUpdateDialog(downloadUrl: String) {
         val black = ContextCompat.getColor(context, R.color.black)
-        val white = ContextCompat.getColor(context, R.color.white)
 
         (context as? Activity)?.runOnUiThread {
             MaterialDialog(context).show {
@@ -95,17 +94,11 @@ class UpdateChecker(private val context: Context) {
                     dismiss()
                 }
 
-                // Style positive button
-                getActionButton(WhichButton.POSITIVE).let { button ->
-                    button.setTextColor(black)
-                    button.setBackgroundColor(white)
-                }
+                // Style positive button text color
+                getActionButton(WhichButton.POSITIVE)?.setTextColor(black)
 
-                // Style negative button
-                getActionButton(WhichButton.NEGATIVE).let { button ->
-                    button.setTextColor(black)
-                    button.setBackgroundColor(white)
-                }
+                // Style negative button text color
+                getActionButton(WhichButton.NEGATIVE)?.setTextColor(black)
             }
         }
     }
