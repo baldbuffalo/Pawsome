@@ -1,5 +1,5 @@
 [versions]
-agp = "8.6.0-alpha07"
+agp = "8.6.0-alpha08"
 appcompat = "1.7.0"
 cameraView = "1.4.0-beta02"
 compilerVersion = "4.12.0"
@@ -16,7 +16,6 @@ junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 activityCompose = "1.9.0"
 composeBom = "2024.06.00"
-kotlinStdlib = "2.0.20-Beta1"
 kotlinxCoroutinesPlayServices = "1.8.1"
 ksp = "4.16.0"
 playServicesAuth = "21.2.0"
@@ -41,10 +40,8 @@ androidx-lifecycle-livedata-ktx = { module = "androidx.lifecycle:lifecycle-lived
 androidx-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime", version.ref = "lifecycle" }
 androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
 androidx-lifecycle-viewmodel-savedstate = { module = "androidx.lifecycle:lifecycle-viewmodel-savedstate", version.ref = "lifecycle" }
-glide = { module = "com.github.bumptech.glide:glide", version.ref = "compilerVersion" }
 glide-compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "compilerVersion" }
 glide-v4160 = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
-kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlinStdlib" }
 ksp = { module = "com.github.bumptech.glide:ksp", version.ref = "ksp" }
 lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx",  version.ref = "lifecycle" }
 credentials = { module = "androidx.credentials:credentials-play-services-auth", name = "credentials", version.ref = "credentials" }

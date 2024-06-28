@@ -11,7 +11,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/upload"
-        android:layout_gravity="center"
         android:visibility="gone"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -34,30 +33,29 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <!-- Red scanning line -->
-        <View
-            android:id="@+id/scanningLine"
-            android:layout_width="match_parent"
-            android:layout_height="3dp"
-            android:background="#FF0000"
-            android:visibility="gone"
-            app:layout_constraintTop_toTopOf="@id/camera_box"
-            app:layout_constraintBottom_toBottomOf="@id/camera_box"
-            app:layout_constraintStart_toStartOf="@id/camera_box"
-            app:layout_constraintEnd_toEndOf="@id/camera_box" />
-
-        <!-- Progress bar centered in the parent -->
-        <ProgressBar
-            android:id="@+id/progressBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:layout_gravity="center"
-            app:layout_constraintTop_toTopOf="@id/camera_box"
-            app:layout_constraintBottom_toBottomOf="@id/camera_box"
-            app:layout_constraintStart_toStartOf="@id/camera_box"
-            app:layout_constraintEnd_toEndOf="@id/camera_box" />
-
     </FrameLayout>
+
+    <!-- Progress bar centered in the parent -->
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Red scanning line -->
+    <View
+        android:id="@+id/scanningLine"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:background="#FF0000"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="@id/camera_box"
+        app:layout_constraintBottom_toBottomOf="@id/camera_box"
+        app:layout_constraintStart_toStartOf="@id/camera_box"
+        app:layout_constraintEnd_toEndOf="@id/camera_box" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
