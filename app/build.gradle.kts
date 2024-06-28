@@ -62,6 +62,10 @@ ksp {
 
 dependencies {
 
+
+    implementation(libs.okhttp)
+    implementation(libs.gson)
+    implementation(libs.core)
     implementation(libs.glide.v4160)
     implementation(libs.androidx.recyclerview)
     ksp(libs.ksp)
