@@ -95,6 +95,7 @@ class UpdateChecker(private val context: Context) {
         // Apply custom style to buttons
         dialog.getActionButton(WhichButton.POSITIVE)?.setTextAppearance(R.style.DialogButtonStyle)
         dialog.getActionButton(WhichButton.NEGATIVE)?.setTextAppearance(R.style.DialogButtonStyle)
+        dialog.getActionButton(WhichButton.POSITIVE)?.setTextColor(Color.RED) // Change color here
     }
 
     private fun downloadAndInstallUpdate(downloadUrl: String) {
