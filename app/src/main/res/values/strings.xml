@@ -18,5 +18,5 @@
     <string name="cat_image">cat_image</string>
     <string name="cat_description">Cat Description</string>
     <string name="cat_name">Cat Name</string>
-    <string name="github_repo_url">https://api.github.com/repos/your-username/your-repo/releases/latest</string>
+    <string name="github_repo_url">https://api.github.com/repos/baldbuffalo/Pawsome/releases</string>
 </resources>

@@ -25,46 +25,63 @@ class UpdateChecker(private val context: Context) {
     private val client = OkHttpClient()
     private val gson = Gson()
 
-    // Access the URL from strings.xml
-    private val URL: String by lazy {
+    private val url: String by lazy {
         context.getString(R.string.github_repo_url)
     }
 
     fun checkForUpdate(currentVersion: String) {
         val request = Request.Builder()
-            .url(URL) // Use the URL variable here
+            .url(url)
             .build()
 
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 e.printStackTrace()
+                showToast("Failed to check for updates")
             }
 
             override fun onResponse(call: Call, response: Response) {
+                val responseBody = response.body
+                val responseCode = response.code
+
                 if (response.isSuccessful) {
-                    response.body.let { responseBody ->
-                        val release = gson.fromJson(responseBody.string(), GitHubRelease::class.java)
+                    try {
+                        val bodyString = responseBody.string()
+                        val release = gson.fromJson(bodyString, GitHubRelease::class.java)
                         val latestVersion = release.tagName
 
-                        if (latestVersion > currentVersion) {
+                        if (isVersionNewer(latestVersion, currentVersion)) {
                             (context as Activity).runOnUiThread {
                                 showUpdateDialog(release.assets[0].browserDownloadUrl)
                             }
                         }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        showToast("Error parsing update data")
+                    } finally {
+                        responseBody.close()
                     }
+                } else {
+                    showToast("Failed to get update data: $responseCode")
                 }
             }
         })
     }
 
+    private fun isVersionNewer(newVersion: String, currentVersion: String): Boolean {
+        return newVersion > currentVersion
+    }
+
     private fun showUpdateDialog(downloadUrl: String) {
-        MaterialDialog(context).show {
-            title(text = "Update Available")
-            message(text = "A new version of the app is available. Would you like to update?")
-            positiveButton(text = "Update") {
-                downloadAndInstallUpdate(downloadUrl)
+        (context as? Activity)?.runOnUiThread {
+            MaterialDialog(context).show {
+                title(text = "Update Available")
+                message(text = "A new version of the app is available. Would you like to update?")
+                positiveButton(text = "Update") {
+                    downloadAndInstallUpdate(downloadUrl)
+                }
+                negativeButton(text = "Cancel")
             }
-            negativeButton(text = "Cancel")
         }
     }
 
@@ -80,6 +97,10 @@ class UpdateChecker(private val context: Context) {
         val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
         downloadManager.enqueue(request)
 
-        Toast.makeText(context, "Downloading update...", Toast.LENGTH_SHORT).show()
+        showToast("Downloading update...")
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 }
