@@ -3,10 +3,14 @@ package com.example.pawsome
 import android.app.Activity
 import android.app.DownloadManager
 import android.content.Context
+import android.graphics.Color
 import android.net.Uri
 import android.os.Environment
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.WhichButton
+import com.afollestad.materialdialogs.actions.getActionButton
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import okhttp3.*
@@ -47,12 +51,16 @@ class UpdateChecker(private val context: Context) {
                 if (response.isSuccessful) {
                     try {
                         val bodyString = responseBody.string()
-                        val release = gson.fromJson(bodyString, GitHubRelease::class.java)
-                        val latestVersion = release.tagName
+                        val releases = gson.fromJson(bodyString, Array<GitHubRelease>::class.java)
 
-                        if (isVersionNewer(latestVersion, currentVersion)) {
-                            (context as Activity).runOnUiThread {
-                                showUpdateDialog(release.assets[0].browserDownloadUrl)
+                        if (releases.isNotEmpty()) {
+                            val latestRelease = releases[0]
+                            val latestVersion = latestRelease.tagName
+
+                            if (isVersionNewer(latestVersion, currentVersion)) {
+                                (context as Activity).runOnUiThread {
+                                    showUpdateDialog(latestRelease.assets[0].browserDownloadUrl)
+                                }
                             }
                         }
                     } catch (e: Exception) {
@@ -73,6 +81,9 @@ class UpdateChecker(private val context: Context) {
     }
 
     private fun showUpdateDialog(downloadUrl: String) {
+        val black = ContextCompat.getColor(context, R.color.black)
+        val white = ContextCompat.getColor(context, R.color.white)
+
         (context as? Activity)?.runOnUiThread {
             MaterialDialog(context).show {
                 title(text = "Update Available")
@@ -80,7 +91,21 @@ class UpdateChecker(private val context: Context) {
                 positiveButton(text = "Update") {
                     downloadAndInstallUpdate(downloadUrl)
                 }
-                negativeButton(text = "Cancel")
+                negativeButton(text = "Cancel") {
+                    dismiss()
+                }
+
+                // Style positive button
+                getActionButton(WhichButton.POSITIVE).let { button ->
+                    button.setTextColor(black)
+                    button.setBackgroundColor(white)
+                }
+
+                // Style negative button
+                getActionButton(WhichButton.NEGATIVE).let { button ->
+                    button.setTextColor(black)
+                    button.setBackgroundColor(white)
+                }
             }
         }
     }
