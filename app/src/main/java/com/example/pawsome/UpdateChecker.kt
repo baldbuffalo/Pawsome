@@ -50,7 +50,7 @@ class UpdateChecker(private val context: Context) {
 
                 if (response.isSuccessful) {
                     try {
-                        val bodyString = responseBody.string()
+                        val bodyString = responseBody!!.string()
                         val releases = gson.fromJson(bodyString, Array<GitHubRelease>::class.java)
 
                         if (releases.isNotEmpty()) {
@@ -67,7 +67,7 @@ class UpdateChecker(private val context: Context) {
                         e.printStackTrace()
                         showToast("Error parsing update data")
                     } finally {
-                        responseBody.close()
+                        responseBody?.close()
                     }
                 } else {
                     showToast("Failed to get update data: $responseCode")
@@ -81,26 +81,20 @@ class UpdateChecker(private val context: Context) {
     }
 
     private fun showUpdateDialog(downloadUrl: String) {
-        val black = ContextCompat.getColor(context, R.color.black)
-
-        (context as? Activity)?.runOnUiThread {
-            MaterialDialog(context).show {
-                title(text = "Update Available")
-                message(text = "A new version of the app is available. Would you like to update?")
-                positiveButton(text = "Update") {
-                    downloadAndInstallUpdate(downloadUrl)
-                }
-                negativeButton(text = "Cancel") {
-                    dismiss()
-                }
-
-                // Style positive button text color
-                getActionButton(WhichButton.POSITIVE)?.setTextColor(black)
-
-                // Style negative button text color
-                getActionButton(WhichButton.NEGATIVE)?.setTextColor(black)
+        val dialog = MaterialDialog(context).show {
+            title(text = "Update Available")
+            message(text = "A new version of the app is available. Would you like to update?")
+            positiveButton(text = "Update") {
+                downloadAndInstallUpdate(downloadUrl)
+            }
+            negativeButton(text = "Cancel") {
+                dismiss()
             }
         }
+
+        // Apply custom style to buttons
+        //dialog.getActionButton(WhichButton.POSITIVE)?.setTextAppearance(R.style.DialogButtonStyle)
+        //dialog.getActionButton(WhichButton.NEGATIVE)?.setTextAppearance(R.style.DialogButtonStyle)
     }
 
     private fun downloadAndInstallUpdate(downloadUrl: String) {
