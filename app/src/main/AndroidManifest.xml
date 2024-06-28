@@ -57,7 +57,7 @@
             android:theme="@style/AppTheme">
         </activity>
         <activity
-            android:name=".CameraPreview"
+            android:name=".CameraPreviewActivity"
             android:exported="true"
             android:theme="@style/AppTheme">
         </activity>
