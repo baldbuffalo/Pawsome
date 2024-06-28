@@ -101,6 +101,8 @@ class UpdateChecker(private val context: Context) {
     }
 
     private fun showToast(message: String) {
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        (context as Activity).runOnUiThread {
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        }
     }
 }
