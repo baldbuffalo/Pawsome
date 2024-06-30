@@ -3,6 +3,7 @@ package com.example.pawsome
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.Preview
@@ -16,12 +17,17 @@ class CameraPreviewActivity : AppCompatActivity() {
 
     private lateinit var cameraExecutor: ExecutorService
     private lateinit var previewView: PreviewView
+    private lateinit var loadingSpinner: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_camera) // Assumes you have activity_camera.xml for layout
 
         previewView = findViewById(R.id.camera_Preview)
+        loadingSpinner = findViewById(R.id.progressBar)
+
+        // Show loading spinner
+        loadingSpinner.visibility = View.VISIBLE
 
         // Initialize CameraX
         startCamera()
@@ -55,6 +61,9 @@ class CameraPreviewActivity : AppCompatActivity() {
                 cameraProvider.bindToLifecycle(
                     this, cameraSelector, preview
                 )
+
+                // Hide loading spinner when camera is ready
+                loadingSpinner.visibility = View.GONE
 
             } catch (exc: Exception) {
                 // Log or handle exceptions

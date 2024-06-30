@@ -12,6 +12,7 @@ import androidx.core.content.ContextCompat
 class MainActivity : AppCompatActivity() {
 
     private lateinit var scanButton: Button
+    private lateinit var profileButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,6 +25,11 @@ class MainActivity : AppCompatActivity() {
             } else {
                 requestCameraPermission()
             }
+        }
+
+        profileButton = findViewById(R.id.ProfileButton)
+        profileButton.setOnClickListener {
+            openProfileActivity()
         }
 
         // Initialize UpdateChecker
@@ -43,8 +49,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getStoredVersion(): String? {
-        // Implement your logic to retrieve the stored version from SharedPreferences or any other storage mechanism
-        // For example, assuming you store it in SharedPreferences:
         val sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE)
         return sharedPreferences.getString("stored_version", null)
     }
@@ -66,6 +70,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun openCameraPreviewActivity() {
         val intent = Intent(this, CameraPreviewActivity::class.java)
+        startActivity(intent)
+    }
+
+    private fun openProfileActivity() {
+        val intent = Intent(this, ProfileActivity::class.java)
         startActivity(intent)
     }
 
