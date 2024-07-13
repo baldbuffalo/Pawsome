@@ -1,5 +1,6 @@
 package com.example.pawsome
 
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
@@ -9,7 +10,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
-
 
 class CatFormActivity : AppCompatActivity() {
 
@@ -51,15 +51,27 @@ class CatFormActivity : AppCompatActivity() {
             return
         }
 
-        // Simulate post submission
-        simulatePost()
+        // Simulate or handle actual post submission
+        displayPost(name, email)
     }
 
-    private fun simulatePost() {
+    private fun displayPost(name: String, email: String) {
         // Show confirmation message
         textViewConfirmation.visibility = View.VISIBLE
 
-        // You can optionally clear the form fields here
+        // Update the confirmation message with submitted details
+        val confirmationMessage = "Posted by $name\nEmail: $email"
+        textViewConfirmation.text = confirmationMessage
+
+        // Load image if available
+        val imageUri = intent.getParcelableExtra<Uri>("imageUri")
+        imageUri?.let {
+            Glide.with(this)
+                .load(it)
+                .into(catImageView)
+        }
+
+        // Clear form fields
         editTextName.text.clear()
         editTextEmail.text.clear()
 
