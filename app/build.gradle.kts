@@ -62,13 +62,13 @@ ksp {
 
 dependencies {
 
-    implementation(libs.firebase.ml.vision.image.label.model)
+    //implementation(libs.firebase.ml.vision.image.label.model)
     implementation(libs.okhttp)
     implementation(libs.gson)
     implementation(libs.core)
     implementation(libs.glide.v4160)
     implementation(libs.androidx.recyclerview)
-    implementation(libs.firebase.ml.vision)
+    //implementation(libs.firebase.ml.vision)
     ksp(libs.ksp)
     ksp(libs.glide.compiler)
     implementation(libs.play.services.mlkit.image.labeling)
