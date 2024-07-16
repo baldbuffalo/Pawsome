@@ -132,6 +132,7 @@ class CameraPreviewActivity : AppCompatActivity() {
             object : ImageCapture.OnImageSavedCallback {
                 override fun onError(exception: ImageCaptureException) {
                     // Handle error
+                    isCatDetected = false
                 }
 
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
