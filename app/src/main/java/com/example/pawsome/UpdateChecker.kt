@@ -50,7 +50,7 @@ class UpdateChecker(private val context: Context) {
 
                 if (response.isSuccessful) {
                     try {
-                        val bodyString = responseBody!!.string()
+                        val bodyString = responseBody.string()
                         val releases = gson.fromJson(bodyString, Array<GitHubRelease>::class.java)
 
                         if (releases.isNotEmpty()) {
@@ -67,7 +67,7 @@ class UpdateChecker(private val context: Context) {
                         e.printStackTrace()
                         showToast("Error parsing update data")
                     } finally {
-                        responseBody?.close()
+                        responseBody.close()
                     }
                 } else {
                     showToast("Failed to get update data: $responseCode")
@@ -93,9 +93,9 @@ class UpdateChecker(private val context: Context) {
         }
 
         // Apply custom style to buttons
-        dialog.getActionButton(WhichButton.POSITIVE)?.setTextAppearance(R.style.DialogButtonStyle)
-        dialog.getActionButton(WhichButton.NEGATIVE)?.setTextAppearance(R.style.DialogButtonStyle)
-        dialog.getActionButton(WhichButton.POSITIVE)?.setTextColor(Color.RED) // Change color here
+        dialog.getActionButton(WhichButton.POSITIVE).setTextAppearance(R.style.DialogButtonStyle)
+        dialog.getActionButton(WhichButton.NEGATIVE).setTextAppearance(R.style.DialogButtonStyle)
+        dialog.getActionButton(WhichButton.POSITIVE).setTextColor(Color.RED) // Change color here
     }
 
     private fun downloadAndInstallUpdate(downloadUrl: String) {
