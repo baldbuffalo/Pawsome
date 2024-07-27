@@ -23,7 +23,6 @@ class CatFormActivity : AppCompatActivity() {
         setContentView(R.layout.cat_form_activity)
 
         editTextName = findViewById(R.id.editTextName)
-        editTextEmail = findViewById(R.id.editTextEmail)
         catImageView = findViewById(R.id.catImageView)
         textViewConfirmation = findViewById(R.id.textViewConfirmation)
 
@@ -63,14 +62,6 @@ class CatFormActivity : AppCompatActivity() {
         val confirmationMessage = "Posted by $name\nEmail: $email"
         textViewConfirmation.text = confirmationMessage
 
-        // Load image if available
-        val imageUri = intent.getParcelableExtra<Uri>("imageUri")
-        imageUri?.let {
-            Glide.with(this)
-                .load(it)
-                .into(catImageView)
-        }
-
         // Clear form fields
         editTextName.text.clear()
         editTextEmail.text.clear()
@@ -79,5 +70,13 @@ class CatFormActivity : AppCompatActivity() {
         textViewConfirmation.postDelayed({
             textViewConfirmation.visibility = View.GONE
         }, 3000) // 3 seconds delay to hide the confirmation message
+    }
+
+    companion object {
+        fun newIntent(context: Context, imageUri: String): Intent {
+            val intent = Intent(context, CatFormActivity::class.java)
+            intent.putExtra("imageUri", Uri.parse(imageUri))
+            return intent
+        }
     }
 }

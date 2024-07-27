@@ -7,20 +7,29 @@
         android:id="@+id/editTextName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Name"/>
+        android:hint="@string/name"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"/>
 
     <EditText
-        android:id="@+id/editTextEmail"
+        android:id="@+id/editTextDescription"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/editTextName"
-        android:hint="Email"/>
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:hint="@string/description"/>
 
     <ImageView
         android:id="@+id/catImageView"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:layout_below="@id/editTextEmail"
+        android:layout_below="@id/editTextDescription"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         android:scaleType="centerCrop"
         android:src="@drawable/placeholder_image"/>
 
@@ -29,6 +38,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/catImageView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
         android:text="Submit"/>
 
     <TextView
