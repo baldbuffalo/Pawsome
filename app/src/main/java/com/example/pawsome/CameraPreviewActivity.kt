@@ -39,27 +39,11 @@ class CameraPreviewActivity : AppCompatActivity() {
         // Show loading spinner
         loadingSpinner.visibility = View.VISIBLE
 
-        // Start scanning line animation
-        startScanningLineAnimation()
-
         // Initialize CameraX
         startCamera()
 
         // Initialize our background executor
         cameraExecutor = Executors.newSingleThreadExecutor()
-    }
-
-    private fun startScanningLineAnimation() {
-        val animation = TranslateAnimation(
-            TranslateAnimation.ABSOLUTE, 0f,
-            TranslateAnimation.ABSOLUTE, 0f,
-            TranslateAnimation.RELATIVE_TO_PARENT, -0.5f,
-            TranslateAnimation.RELATIVE_TO_PARENT, 0.5f
-        )
-        animation.duration = 1000
-        animation.repeatMode = TranslateAnimation.REVERSE
-        animation.repeatCount = TranslateAnimation.INFINITE
-        scanningLine.startAnimation(animation)
     }
 
     @ExperimentalGetImage
@@ -69,7 +53,7 @@ class CameraPreviewActivity : AppCompatActivity() {
         cameraProviderFuture.addListener({
             val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
             val preview = Preview.Builder().build().also {
-                it.surfaceProvider = previewView.surfaceProvider
+                it.setSurfaceProvider(previewView.surfaceProvider)
             }
 
             imageCapture = ImageCapture.Builder()
@@ -90,11 +74,28 @@ class CameraPreviewActivity : AppCompatActivity() {
                 cameraProvider.bindToLifecycle(
                     this, cameraSelector, preview, imageCapture, imageAnalyzer
                 )
+
+                // Hide loading spinner and show scanning line animation
                 loadingSpinner.visibility = View.GONE
+                startScanningLineAnimation()
             } catch (exc: Exception) {
                 // Log or handle exceptions
             }
         }, ContextCompat.getMainExecutor(this))
+    }
+
+    private fun startScanningLineAnimation() {
+        val animation = TranslateAnimation(
+            TranslateAnimation.ABSOLUTE, 0f,
+            TranslateAnimation.ABSOLUTE, 0f,
+            TranslateAnimation.RELATIVE_TO_PARENT, -0.5f,
+            TranslateAnimation.RELATIVE_TO_PARENT, 0.5f
+        )
+        animation.duration = 1000
+        animation.repeatMode = TranslateAnimation.REVERSE
+        animation.repeatCount = TranslateAnimation.INFINITE
+        scanningLine.visibility = View.VISIBLE
+        scanningLine.startAnimation(animation)
     }
 
     @ExperimentalGetImage
@@ -158,8 +159,10 @@ class CameraPreviewActivity : AppCompatActivity() {
     }
 
     companion object {
-        fun newIntent(context: Context): Intent {
-            return Intent(context, CameraPreviewActivity::class.java)
+        fun newIntent(context: Context, imageUri: String): Intent {
+            val intent = Intent(context, CameraPreviewActivity::class.java)
+            intent.putExtra("imageUri", imageUri)
+            return intent
         }
     }
 }

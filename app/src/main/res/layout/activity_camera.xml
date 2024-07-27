@@ -17,22 +17,32 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Full-screen camera preview -->
+    <!-- Full-screen camera preview container -->
     <FrameLayout
-        android:id="@+id/camera_box"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:id="@+id/camera_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#000000"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Camera preview -->
-        <androidx.camera.view.PreviewView
-            android:id="@+id/camera_Preview"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+        <!-- Camera preview box -->
+        <FrameLayout
+            android:id="@+id/camera_box"
+            android:layout_width="300dp"
+            android:layout_height="400dp"
+            android:layout_gravity="center"
+            android:background="#000000"
+            android:padding="16dp">
 
+            <!-- Camera preview -->
+            <androidx.camera.view.PreviewView
+                android:id="@+id/camera_Preview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </FrameLayout>
     </FrameLayout>
 
     <!-- Progress bar centered in the parent -->
