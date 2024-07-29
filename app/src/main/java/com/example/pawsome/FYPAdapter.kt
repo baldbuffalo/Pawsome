@@ -1,6 +1,6 @@
 package com.example.pawsome
 
-import android.view.LayoutInflater
+/*import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -23,7 +23,8 @@ class FYPAdapter(private val catPostList: List<CatPost>) : RecyclerView.Adapter<
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_cat_post, parent, false)
+        val view =
+            LayoutInflater.from(parent.context).inflate(R.layout.item_cat_post, parent, false)
         return ViewHolder(view)
     }
 
