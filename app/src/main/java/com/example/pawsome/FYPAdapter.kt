@@ -38,3 +38,4 @@ class FYPAdapter(private val catPostList: List<CatPost>) : RecyclerView.Adapter<
         return catPostList.size
     }
 }
+*/
