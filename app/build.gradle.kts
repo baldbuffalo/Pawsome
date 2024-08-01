@@ -61,15 +61,11 @@ ksp {
 }
 
 dependencies {
-
-    //implementation(libs.firebase.ml.vision.image.label.model)
     implementation(libs.okhttp)
     implementation(libs.gson)
     implementation(libs.core)
     implementation(libs.glide.v4160)
     implementation(libs.androidx.recyclerview)
-    //implementation(libs.firebase.ml.vision)
-    ksp(libs.ksp)
     ksp(libs.glide.compiler)
     implementation(libs.play.services.mlkit.image.labeling)
     implementation(libs.image.labeling)
@@ -98,7 +94,6 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.play.services.base)
     implementation(libs.play.services.auth) // Google Sign-In
-    //implementation(libs.firebase.ml.vision)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
