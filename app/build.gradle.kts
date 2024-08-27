@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.compose.compiler)
-    id("org.jetbrains.kotlin.kapt") version "2.0.20-Beta1"
+    id("org.jetbrains.kotlin.kapt") version "2.0.20"
     alias(libs.plugins.google.gms.google.services)
     id("com.google.devtools.ksp")
 }
@@ -66,7 +66,7 @@ dependencies {
     implementation(libs.core)
     implementation(libs.glide.v4160)
     implementation(libs.androidx.recyclerview)
-    ksp(libs.glide.compiler)
+    //ksp(libs.glide.compiler)
     implementation(libs.play.services.mlkit.image.labeling)
     implementation(libs.image.labeling)
     implementation(platform(libs.firebase.bom))
