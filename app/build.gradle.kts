@@ -29,6 +29,7 @@ android {
         viewBinding = true
         compose = true
     }
+    
 
     buildTypes {
         release {
