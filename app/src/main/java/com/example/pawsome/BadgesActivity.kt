@@ -1,5 +1,7 @@
 package com.example.pawsome
 
-class BadgesActivity {
+import androidx.appcompat.app.AppCompatActivity
+
+class BadgesActivity : AppCompatActivity() {
 
 }
