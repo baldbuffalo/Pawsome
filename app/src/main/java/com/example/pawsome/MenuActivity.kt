@@ -1,127 +1,90 @@
 package com.example.pawsome
 
 import android.content.Intent
+import android.credentials.CredentialManager
 import android.os.Bundle
 import android.util.Log
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.example.pawsome.databinding.MenuActivityBinding
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.auth.api.signin.Credential
 import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.tasks.Task
+import com.google.android.gms.identity.CredentialManager
+import com.google.android.gms.identity.account.GoogleAccountCredential
 
 class MenuActivity : AppCompatActivity() {
 
     private lateinit var binding: MenuActivityBinding
-    private lateinit var googleSignInClient: GoogleSignInClient
-
-    private val signInLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == RESULT_OK) {
-            val task = GoogleSignIn.getSignedInAccountFromIntent(result.data!!)
-            handleSignInResult(task)
-        } else {
-            // Handle sign-in cancellation or error
-            Log.e("Menu", "Sign-in cancelled or failed")
-        }
-    }
+    private lateinit var credentialManager: CredentialManager
+    private lateinit var signInLauncher: ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = MenuActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Configure Google Sign-In options with your server's client ID (replace with your actual ID)
-        val googleSignInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.your_server_client_id)) // Use empty string if null
-            .requestEmail()
-            .build()
+        credentialManager = CredentialManager.getInstance(this)
 
-        googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions)
+        signInLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                val pendingCredential = credentialManager.getSignInCredentialFromIntent(result.data!!)
+                if (pendingCredential != null) {
+                    handleSignInResult(pendingCredential)
+                } else {
+                    Log.e("Menu", "Sign-in cancelled")
+                }
+            } else {
+                Log.e("Menu", "Sign-in failed")
+            }
+        }
+
+        // Check if user is already signed in with Google
+        val account = GoogleAccountCredential.getSyncAccount(this, null)
+        if (account != null) {
+            goToMainActivity(account.name) // Use account name for now (modify for other data)
+        }
 
         binding.signInButton.setOnClickListener {
             signIn()
         }
-
-        // Check if the user is already signed in
-        val account = GoogleSignIn.getLastSignedInAccount(this)
-        if (account != null) {
-            // User is already signed in, go directly to MainActivity
-            goToMainActivity(account)
-        }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        finish()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        finish()
     }
 
     private fun signIn() {
-        val signInIntent = googleSignInClient.signInIntent
+        val signInIntent = credentialManager.getSignInIntent(
+            CredentialPickerConfig.Builder()
+                .setServerClientId(getString(R.string.your_server_client_id)) // Replace with your ID
+                .build()
+        )
         signInLauncher.launch(signInIntent)
     }
 
-    private fun handleSignInResult(task: Task<GoogleSignInAccount>) {
-        try {
-            val account = task.getResult(ApiException::class.java)
-            if (account != null) {
-                // Sign-in successful
-                goToMainActivity(account)
-            } else {
-                // Sign-in failed
-                Log.e("Menu", "Sign-in failed: Account is null")
-            }
-        } catch (e: ApiException) {
-            // Sign-in failed
-            Log.e("Menu", "Sign-in failed:", e)
-        }
+    private fun handleSignInResult(credential: Credential) {
+        // Extract user information from credential object (can include display name, email)
+        val name = credential.accountDisplayName
+        val email = credential.accountEmail
+
+        Log.d("Menu", "Sign-in successful! Name: $name, Email: $email")
+
+        // ... handle user data and potentially request access tokens ...
+
+        goToMainActivity(name) // Pass user name for now (modify for other data)
     }
 
-    private fun goToMainActivity(account: GoogleSignInAccount) {
-        val idToken = account.idToken
-        val displayName = account.displayName
-        val email = account.email
-
-        Log.d("Menu", "Sign-in successful! ID Token: $idToken, Display Name: $displayName, Email: $email")
-
-        // Pass user's name to com.example.pawsome.ProfileActivity
+    private fun goToMainActivity(userName: String) {
         val profileIntent = Intent(this, ProfileActivity::class.java).apply {
-            putExtra("userName", displayName)
+            putExtra("userName", userName)
         }
         startActivity(profileIntent)
 
         // Store user data locally (using SharedPreferences)
-        val sharedPref = getSharedPreferences("user_data", MODE_PRIVATE)
-        with(sharedPref.edit()) {
-            putString("id_token", idToken)
-            putString("display_name", displayName)
-            putString("email", email)
-            apply()
-        }
+        // ... implement using SharedPreferences (modify for user data) ...
 
-        // Handle potential null case for ID token
-        validateIdTokenOnServer(idToken)
+        // Validate ID token on server (if applicable)
+        // ... implement server validation logic (modify for your setup) ...
 
-        // Navigate to com.example.pawsome.MainActivity
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
-        finish() // Optional: close the com.example.pawsome.MenuActivity
-    }
-
-    private fun validateIdTokenOnServer(idToken: String?) {
-        if (idToken != null) {
-            // Proceed with validation logic using idToken
-            // ... your code to send idToken to server ...
-        } else {
-            // Handle the case where idToken is null (e.g., log an error)
-            Log.e("Menu", "validateIdTokenOnServer: ID token is null")
-        }
+        finish() // Optional: close MenuActivity
     }
 }
