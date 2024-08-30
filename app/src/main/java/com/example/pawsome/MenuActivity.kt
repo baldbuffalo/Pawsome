@@ -1,22 +1,22 @@
 package com.example.pawsome
 
 import android.content.Intent
-import android.credentials.CredentialManager
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.example.pawsome.databinding.MenuActivityBinding
-import com.google.android.gms.auth.api.signin.Credential
+import com.google.android.gms.auth.api.identity.BeginSignInRequest
+import com.google.android.gms.auth.api.identity.Identity
+import com.google.android.gms.auth.api.identity.SignInClient
+import com.google.android.gms.auth.api.identity.SignInCredential
 import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.identity.CredentialManager
-import com.google.android.gms.identity.account.GoogleAccountCredential
 
 class MenuActivity : AppCompatActivity() {
 
     private lateinit var binding: MenuActivityBinding
-    private lateinit var credentialManager: CredentialManager
+    private lateinit var oneTapClient: SignInClient
     private lateinit var signInLauncher: ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,25 +24,26 @@ class MenuActivity : AppCompatActivity() {
         binding = MenuActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        credentialManager = CredentialManager.getInstance(this)
+        // Initialize the Google Sign-In client
+        oneTapClient = Identity.getSignInClient(this)
 
         signInLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK) {
-                val pendingCredential = credentialManager.getSignInCredentialFromIntent(result.data!!)
-                if (pendingCredential != null) {
-                    handleSignInResult(pendingCredential)
-                } else {
-                    Log.e("Menu", "Sign-in cancelled")
+                try {
+                    val credential = oneTapClient.getSignInCredentialFromIntent(result.data)
+                    handleSignInResult(credential)
+                } catch (e: ApiException) {
+                    Log.e("Menu", "Sign-in failed", e)
                 }
             } else {
-                Log.e("Menu", "Sign-in failed")
+                Log.e("Menu", "Sign-in canceled or failed")
             }
         }
 
-        // Check if user is already signed in with Google
-        val account = GoogleAccountCredential.getSyncAccount(this, null)
+        // Check if user is already signed in
+        val account = getCurrentSignedInAccount()
         if (account != null) {
-            goToMainActivity(account.name) // Use account name for now (modify for other data)
+            goToMainActivity(account.displayName) // Modify for other data if needed
         }
 
         binding.signInButton.setOnClickListener {
@@ -51,24 +52,39 @@ class MenuActivity : AppCompatActivity() {
     }
 
     private fun signIn() {
-        val signInIntent = credentialManager.getSignInIntent(
-            CredentialPickerConfig.Builder()
-                .setServerClientId(getString(R.string.your_server_client_id)) // Replace with your ID
-                .build()
-        )
-        signInLauncher.launch(signInIntent)
+        val signInRequest = BeginSignInRequest.builder()
+            .setGoogleIdTokenRequestOptions(
+                BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
+                    .setSupported(true)
+                    .setServerClientId(getString(R.string.your_server_client_id)) // Replace with your ID
+                    .setFilterByAuthorizedAccounts(false)
+                    .build()
+            )
+            .setAutoSelectEnabled(true)
+            .build()
+
+        oneTapClient.beginSignIn(signInRequest)
+            .addOnSuccessListener { result ->
+                signInLauncher.launch(result.pendingIntent.intent)
+            }
+            .addOnFailureListener { e ->
+                Log.e("Menu", "Google Sign-In failed", e)
+            }
     }
 
-    private fun handleSignInResult(credential: Credential) {
-        // Extract user information from credential object (can include display name, email)
-        val name = credential.accountDisplayName
-        val email = credential.accountEmail
+    private fun handleSignInResult(credential: SignInCredential) {
+        val name = credential.displayName
+        val email = credential.id
 
         Log.d("Menu", "Sign-in successful! Name: $name, Email: $email")
 
-        // ... handle user data and potentially request access tokens ...
+        goToMainActivity(name ?: "") // Handle nullability of name
+    }
 
-        goToMainActivity(name) // Pass user name for now (modify for other data)
+    private fun getCurrentSignedInAccount(): SignInCredential? {
+        // Logic to get currently signed-in account, if any.
+        // This might involve checking stored credentials or querying the Identity API.
+        return null // Replace with actual logic if needed
     }
 
     private fun goToMainActivity(userName: String) {
@@ -76,12 +92,6 @@ class MenuActivity : AppCompatActivity() {
             putExtra("userName", userName)
         }
         startActivity(profileIntent)
-
-        // Store user data locally (using SharedPreferences)
-        // ... implement using SharedPreferences (modify for user data) ...
-
-        // Validate ID token on server (if applicable)
-        // ... implement server validation logic (modify for your setup) ...
 
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
