@@ -61,6 +61,8 @@ ksp {
 }
 
 dependencies {
+    implementation (libs.play.services.identity)
+    implementation (libs.play.services.auth)
     implementation(libs.okhttp)
     implementation(libs.gson)
     implementation(libs.core)
