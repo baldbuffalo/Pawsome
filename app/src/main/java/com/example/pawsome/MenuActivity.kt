@@ -11,7 +11,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.auth.api.signin.GoogleSignInResult
 import com.google.android.gms.common.api.ApiException
 
 class MenuActivity : AppCompatActivity() {
@@ -25,33 +24,37 @@ class MenuActivity : AppCompatActivity() {
         binding = MenuActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Configure sign-in to request the user's ID, email address, and basic profile
+        // This app only needs the signed-in user's basic profile/email.
+        // Requesting an ID token here was unnecessary because the app does not
+        // send the token to a backend, and it can trigger an oauth2:openid token
+        // request that fails with BAD_AUTHENTICATION on some devices/accounts.
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.your_server_client_id)) // Replace with your server client ID
             .requestEmail()
             .build()
 
-        // Build a GoogleSignInClient with the options specified
         googleSignInClient = GoogleSignIn.getClient(this, gso)
 
         signInLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == RESULT_OK) {
-                val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-                try {
-                    val account = task.getResult(ApiException::class.java)
-                    handleSignInResult(account)
-                } catch (e: ApiException) {
-                    Log.e("Menu", "Sign-in failed", e)
-                }
-            } else {
-                Log.e("Menu", "Sign-in canceled or failed")
+            if (result.resultCode != RESULT_OK) {
+                Log.w("Menu", "Sign-in canceled or failed: resultCode=${result.resultCode}")
+                return@registerForActivityResult
+            }
+
+            val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+            try {
+                val account = task.getResult(ApiException::class.java)
+                handleSignInResult(account)
+            } catch (e: ApiException) {
+                Log.e("Menu", "Sign-in failed: statusCode=${e.statusCode}", e)
+            } catch (e: Exception) {
+                Log.e("Menu", "Unexpected error while completing Google sign-in", e)
             }
         }
 
-        // Check if user is already signed in
+        // Check whether a valid Google account is already signed in.
         val account = GoogleSignIn.getLastSignedInAccount(this)
         if (account != null) {
-            goToMainActivity(account.displayName ?: "")
+            goToMainActivity(account.displayName.orEmpty())
         }
 
         binding.signInButton.setOnClickListener {
@@ -60,27 +63,25 @@ class MenuActivity : AppCompatActivity() {
     }
 
     private fun signIn() {
-        val signInIntent = googleSignInClient.signInIntent
-        signInLauncher.launch(signInIntent)
+        signInLauncher.launch(googleSignInClient.signInIntent)
     }
 
     private fun handleSignInResult(account: GoogleSignInAccount?) {
-        val name = account?.displayName
-        val email = account?.email
+        if (account == null) {
+            Log.e("Menu", "Google sign-in returned no account")
+            return
+        }
 
-        Log.d("Menu", "Sign-in successful! Name: $name, Email: $email")
-
-        goToMainActivity(name ?: "")
+        Log.d("Menu", "Sign-in successful! Name: ${account.displayName}, Email: ${account.email}")
+        goToMainActivity(account.displayName.orEmpty())
     }
 
     private fun goToMainActivity(userName: String) {
-        val profileIntent = Intent(this, ProfileActivity::class.java).apply {
+        startActivity(Intent(this, ProfileActivity::class.java).apply {
             putExtra("userName", userName)
-        }
-        startActivity(profileIntent)
+        })
 
-        val intent = Intent(this, MainActivity::class.java)
-        startActivity(intent)
-        finish() // Optional: close MenuActivity
+        startActivity(Intent(this, MainActivity::class.java))
+        finish()
     }
 }
